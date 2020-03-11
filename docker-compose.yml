@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+  gitlab-runner:
+    image: gitlab-runner-maven
+    build: dockerfile
+    restart: always
+    privileged: true
+    volumes:
+      - /usr/local/docker/gitlab-runner/config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
