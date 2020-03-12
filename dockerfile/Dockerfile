@@ -29,12 +29,17 @@ WORKDIR /usr/local/maven
 COPY apache-maven-3.6.3-bin.tar.gz /usr/local/maven
 RUN tar -zxvf apache-maven-3.6.3-bin.tar.gz && \
 	rm -rf apache-maven-3.6.3-bin.tar.gz
-	
-# 切换用户避免环境变量无法使用
-USER gitlab-runner
+
 ENV JAVA_HOME /usr/local/java/jdk1.8.0_241
 ENV MAVEN_HOME /usr/local/maven/apache-maven-3.6.3
 ENV PATH $PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin
+
+RUN ln -s /usr/local/maven/apache-maven-3.6.3/bin/mvn /usr/bin/mvn && \
+# 先将gitlab-runner用户加入root组
+usermod -g root gitlab-runner && \
+# 再将gitlab-runner用户的UID修改成root一样的UID，这样gitlab-runner就拥有了跟root一样的权限了
+# 这里一定要加上 -o 不然回提示uid为0的用户已存在
+usermod -u 0 -o gitlab-runner
 
 WORKDIR /
 
